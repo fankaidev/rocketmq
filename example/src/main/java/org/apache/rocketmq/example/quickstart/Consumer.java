@@ -52,6 +52,8 @@ public class Consumer {
         /*
          * Specify where to start in case the specified consumer group is a brand new one.
          */
+        consumer.setNamesrvAddr("rocketmq-namesrv:9876");
+
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
 
         /*
