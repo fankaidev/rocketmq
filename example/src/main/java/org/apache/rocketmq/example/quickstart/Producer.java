@@ -16,6 +16,7 @@
  */
 package org.apache.rocketmq.example.quickstart;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -25,6 +26,7 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 /**
  * This class demonstrates how to send messages to brokers using provided {@link DefaultMQProducer}.
  */
+@Slf4j
 public class Producer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
 
@@ -52,7 +54,7 @@ public class Producer {
 
         producer.start();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             try {
 
                 /*
@@ -68,7 +70,7 @@ public class Producer {
                  */
                 SendResult sendResult = producer.send(msg);
 
-                System.out.printf("%s%n", sendResult);
+                log.info("{} {}", sendResult.getMsgId(), sendResult);
             } catch (Exception e) {
                 e.printStackTrace();
                 Thread.sleep(1000);
