@@ -272,18 +272,20 @@ public class AsyncTraceDispatcher implements TraceDispatcher {
             Set<String> keySet = new HashSet<String>();
 
             for (TraceTransferBean bean : transBeanList) {
-                // Keyset of message trace includes msgId of or original message
-                keySet.addAll(bean.getTransKey());
-                buffer.append(bean.getTransData());
-                count++;
                 // Ensure that the size of the package should not exceed the upper limit.
-                if (buffer.length() >= traceProducer.getMaxMessageSize()) {
+                int size = bean.getTransData().length();
+                if (buffer.length() + size >= traceProducer.getMaxMessageSize()) {
                     sendTraceDataByMQ(keySet, buffer.toString());
                     // Clear temporary buffer after finishing
                     buffer.delete(0, buffer.length());
                     keySet.clear();
                     count = 0;
                 }
+
+                // Keyset of message trace includes msgId of or original message
+                keySet.addAll(bean.getTransKey());
+                buffer.append(bean.getTransData());
+                count++;
             }
             if (count > 0) {
                 sendTraceDataByMQ(keySet, buffer.toString());
