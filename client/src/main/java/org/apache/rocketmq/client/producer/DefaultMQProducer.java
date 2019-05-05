@@ -19,6 +19,9 @@ package org.apache.rocketmq.client.producer;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.rocketmq.client.ClientConfig;
 import org.apache.rocketmq.client.QueryResult;
 import org.apache.rocketmq.client.Validators;
@@ -59,6 +62,8 @@ import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
  * and used among multiple threads context.
  * </p>
  */
+@Setter
+@Getter
 public class DefaultMQProducer extends ClientConfig implements MQProducer {
 
     private final InternalLogger log = ClientLogger.getLog();
@@ -749,74 +754,6 @@ public class DefaultMQProducer extends ClientConfig implements MQProducer {
         return msgBatch;
     }
 
-    public String getProducerGroup() {
-        return producerGroup;
-    }
-
-    public void setProducerGroup(String producerGroup) {
-        this.producerGroup = producerGroup;
-    }
-
-    public String getCreateTopicKey() {
-        return createTopicKey;
-    }
-
-    public void setCreateTopicKey(String createTopicKey) {
-        this.createTopicKey = createTopicKey;
-    }
-
-    public int getSendMsgTimeout() {
-        return sendMsgTimeout;
-    }
-
-    public void setSendMsgTimeout(int sendMsgTimeout) {
-        this.sendMsgTimeout = sendMsgTimeout;
-    }
-
-    public int getCompressMsgBodyOverHowmuch() {
-        return compressMsgBodyOverHowmuch;
-    }
-
-    public void setCompressMsgBodyOverHowmuch(int compressMsgBodyOverHowmuch) {
-        this.compressMsgBodyOverHowmuch = compressMsgBodyOverHowmuch;
-    }
-
-    public DefaultMQProducerImpl getDefaultMQProducerImpl() {
-        return defaultMQProducerImpl;
-    }
-
-    public boolean isRetryAnotherBrokerWhenNotStoreOK() {
-        return retryAnotherBrokerWhenNotStoreOK;
-    }
-
-    public void setRetryAnotherBrokerWhenNotStoreOK(boolean retryAnotherBrokerWhenNotStoreOK) {
-        this.retryAnotherBrokerWhenNotStoreOK = retryAnotherBrokerWhenNotStoreOK;
-    }
-
-    public int getMaxMessageSize() {
-        return maxMessageSize;
-    }
-
-    public void setMaxMessageSize(int maxMessageSize) {
-        this.maxMessageSize = maxMessageSize;
-    }
-
-    public int getDefaultTopicQueueNums() {
-        return defaultTopicQueueNums;
-    }
-
-    public void setDefaultTopicQueueNums(int defaultTopicQueueNums) {
-        this.defaultTopicQueueNums = defaultTopicQueueNums;
-    }
-
-    public int getRetryTimesWhenSendFailed() {
-        return retryTimesWhenSendFailed;
-    }
-
-    public void setRetryTimesWhenSendFailed(int retryTimesWhenSendFailed) {
-        this.retryTimesWhenSendFailed = retryTimesWhenSendFailed;
-    }
-
     public boolean isSendMessageWithVIPChannel() {
         return isVipChannelEnabled();
     }
@@ -847,18 +784,6 @@ public class DefaultMQProducer extends ClientConfig implements MQProducer {
 
     public void setSendLatencyFaultEnable(final boolean sendLatencyFaultEnable) {
         this.defaultMQProducerImpl.setSendLatencyFaultEnable(sendLatencyFaultEnable);
-    }
-
-    public int getRetryTimesWhenSendAsyncFailed() {
-        return retryTimesWhenSendAsyncFailed;
-    }
-
-    public void setRetryTimesWhenSendAsyncFailed(final int retryTimesWhenSendAsyncFailed) {
-        this.retryTimesWhenSendAsyncFailed = retryTimesWhenSendAsyncFailed;
-    }
-
-    public TraceDispatcher getTraceDispatcher() {
-        return traceDispatcher;
     }
 
 }

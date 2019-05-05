@@ -16,19 +16,32 @@
  */
 package org.apache.rocketmq.common.message;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
 public class Message implements Serializable {
     private static final long serialVersionUID = 8445773977080406428L;
 
+    @Setter
     private String topic;
+    @Setter
     private int flag;
+    @Setter(AccessLevel.PACKAGE)
     private Map<String, String> properties;
+    @Setter
     private byte[] body;
+    @Setter
     private String transactionId;
 
     public Message() {
@@ -106,14 +119,6 @@ public class Message implements Serializable {
         return this.properties.get(name);
     }
 
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
     public String getTags() {
         return this.getProperty(MessageConst.PROPERTY_TAGS);
     }
@@ -161,30 +166,6 @@ public class Message implements Serializable {
         this.putProperty(MessageConst.PROPERTY_WAIT_STORE_MSG_OK, Boolean.toString(waitStoreMsgOK));
     }
 
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
-    public byte[] getBody() {
-        return body;
-    }
-
-    public void setBody(byte[] body) {
-        this.body = body;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
     public String getBuyerId() {
         return getProperty(MessageConst.PROPERTY_BUYER_ID);
     }
@@ -193,22 +174,4 @@ public class Message implements Serializable {
         putProperty(MessageConst.PROPERTY_BUYER_ID, buyerId);
     }
 
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    @Override
-    public String toString() {
-        return "Message{" +
-            "topic='" + topic + '\'' +
-            ", flag=" + flag +
-            ", properties=" + properties +
-            ", body=" + Arrays.toString(body) +
-            ", transactionId='" + transactionId + '\'' +
-            '}';
-    }
 }

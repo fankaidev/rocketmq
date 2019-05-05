@@ -16,6 +16,7 @@
  */
 package org.apache.rocketmq.client;
 
+import lombok.Data;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.remoting.common.RemotingUtil;
@@ -25,6 +26,7 @@ import org.apache.rocketmq.remoting.protocol.LanguageCode;
 /**
  * Client Common configuration
  */
+@Data
 public class ClientConfig {
     public static final String SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY = "com.rocketmq.sendMessageWithVIPChannel";
     private String namesrvAddr = System.getProperty(MixAll.NAMESRV_ADDR_PROPERTY, System.getenv(MixAll.NAMESRV_ADDR_ENV));
@@ -65,22 +67,6 @@ public class ClientConfig {
         return sb.toString();
     }
 
-    public String getClientIP() {
-        return clientIP;
-    }
-
-    public void setClientIP(String clientIP) {
-        this.clientIP = clientIP;
-    }
-
-    public String getInstanceName() {
-        return instanceName;
-    }
-
-    public void setInstanceName(String instanceName) {
-        this.instanceName = instanceName;
-    }
-
     public void changeInstanceNameToPID() {
         if (this.instanceName.equals("DEFAULT")) {
             this.instanceName = String.valueOf(UtilAll.getPid());
@@ -119,92 +105,4 @@ public class ClientConfig {
         return cc;
     }
 
-    public String getNamesrvAddr() {
-        return namesrvAddr;
-    }
-
-    public void setNamesrvAddr(String namesrvAddr) {
-        this.namesrvAddr = namesrvAddr;
-    }
-
-    public int getClientCallbackExecutorThreads() {
-        return clientCallbackExecutorThreads;
-    }
-
-    public void setClientCallbackExecutorThreads(int clientCallbackExecutorThreads) {
-        this.clientCallbackExecutorThreads = clientCallbackExecutorThreads;
-    }
-
-    public int getPollNameServerInterval() {
-        return pollNameServerInterval;
-    }
-
-    public void setPollNameServerInterval(int pollNameServerInterval) {
-        this.pollNameServerInterval = pollNameServerInterval;
-    }
-
-    public int getHeartbeatBrokerInterval() {
-        return heartbeatBrokerInterval;
-    }
-
-    public void setHeartbeatBrokerInterval(int heartbeatBrokerInterval) {
-        this.heartbeatBrokerInterval = heartbeatBrokerInterval;
-    }
-
-    public int getPersistConsumerOffsetInterval() {
-        return persistConsumerOffsetInterval;
-    }
-
-    public void setPersistConsumerOffsetInterval(int persistConsumerOffsetInterval) {
-        this.persistConsumerOffsetInterval = persistConsumerOffsetInterval;
-    }
-
-    public String getUnitName() {
-        return unitName;
-    }
-
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
-    }
-
-    public boolean isUnitMode() {
-        return unitMode;
-    }
-
-    public void setUnitMode(boolean unitMode) {
-        this.unitMode = unitMode;
-    }
-
-    public boolean isVipChannelEnabled() {
-        return vipChannelEnabled;
-    }
-
-    public void setVipChannelEnabled(final boolean vipChannelEnabled) {
-        this.vipChannelEnabled = vipChannelEnabled;
-    }
-
-    public boolean isUseTLS() {
-        return useTLS;
-    }
-
-    public void setUseTLS(boolean useTLS) {
-        this.useTLS = useTLS;
-    }
-
-    public LanguageCode getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(LanguageCode language) {
-        this.language = language;
-    }
-
-    @Override
-    public String toString() {
-        return "ClientConfig [namesrvAddr=" + namesrvAddr + ", clientIP=" + clientIP + ", instanceName=" + instanceName
-            + ", clientCallbackExecutorThreads=" + clientCallbackExecutorThreads + ", pollNameServerInterval=" + pollNameServerInterval
-            + ", heartbeatBrokerInterval=" + heartbeatBrokerInterval + ", persistConsumerOffsetInterval="
-            + persistConsumerOffsetInterval + ", unitMode=" + unitMode + ", unitName=" + unitName + ", vipChannelEnabled="
-            + vipChannelEnabled + ", useTLS=" + useTLS + ", language=" + language.name() + "]";
-    }
 }

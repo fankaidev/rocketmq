@@ -16,12 +16,15 @@
  */
 package org.apache.rocketmq.common.message;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
+import lombok.Data;
 import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.sysflag.MessageSysFlag;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+
+@Data
 public class MessageExt extends Message {
     private static final long serialVersionUID = 5720810158625748049L;
 
@@ -93,30 +96,6 @@ public class MessageExt extends Message {
         return socketAddress2ByteBuffer(this.storeHost, byteBuffer);
     }
 
-    public int getQueueId() {
-        return queueId;
-    }
-
-    public void setQueueId(int queueId) {
-        this.queueId = queueId;
-    }
-
-    public long getBornTimestamp() {
-        return bornTimestamp;
-    }
-
-    public void setBornTimestamp(long bornTimestamp) {
-        this.bornTimestamp = bornTimestamp;
-    }
-
-    public SocketAddress getBornHost() {
-        return bornHost;
-    }
-
-    public void setBornHost(SocketAddress bornHost) {
-        this.bornHost = bornHost;
-    }
-
     public String getBornHostString() {
         if (this.bornHost != null) {
             InetSocketAddress inetSocketAddress = (InetSocketAddress) this.bornHost;
@@ -135,93 +114,4 @@ public class MessageExt extends Message {
         return null;
     }
 
-    public long getStoreTimestamp() {
-        return storeTimestamp;
-    }
-
-    public void setStoreTimestamp(long storeTimestamp) {
-        this.storeTimestamp = storeTimestamp;
-    }
-
-    public SocketAddress getStoreHost() {
-        return storeHost;
-    }
-
-    public void setStoreHost(SocketAddress storeHost) {
-        this.storeHost = storeHost;
-    }
-
-    public String getMsgId() {
-        return msgId;
-    }
-
-    public void setMsgId(String msgId) {
-        this.msgId = msgId;
-    }
-
-    public int getSysFlag() {
-        return sysFlag;
-    }
-
-    public void setSysFlag(int sysFlag) {
-        this.sysFlag = sysFlag;
-    }
-
-    public int getBodyCRC() {
-        return bodyCRC;
-    }
-
-    public void setBodyCRC(int bodyCRC) {
-        this.bodyCRC = bodyCRC;
-    }
-
-    public long getQueueOffset() {
-        return queueOffset;
-    }
-
-    public void setQueueOffset(long queueOffset) {
-        this.queueOffset = queueOffset;
-    }
-
-    public long getCommitLogOffset() {
-        return commitLogOffset;
-    }
-
-    public void setCommitLogOffset(long physicOffset) {
-        this.commitLogOffset = physicOffset;
-    }
-
-    public int getStoreSize() {
-        return storeSize;
-    }
-
-    public void setStoreSize(int storeSize) {
-        this.storeSize = storeSize;
-    }
-
-    public int getReconsumeTimes() {
-        return reconsumeTimes;
-    }
-
-    public void setReconsumeTimes(int reconsumeTimes) {
-        this.reconsumeTimes = reconsumeTimes;
-    }
-
-    public long getPreparedTransactionOffset() {
-        return preparedTransactionOffset;
-    }
-
-    public void setPreparedTransactionOffset(long preparedTransactionOffset) {
-        this.preparedTransactionOffset = preparedTransactionOffset;
-    }
-
-    @Override
-    public String toString() {
-        return "MessageExt [queueId=" + queueId + ", storeSize=" + storeSize + ", queueOffset=" + queueOffset
-            + ", sysFlag=" + sysFlag + ", bornTimestamp=" + bornTimestamp + ", bornHost=" + bornHost
-            + ", storeTimestamp=" + storeTimestamp + ", storeHost=" + storeHost + ", msgId=" + msgId
-            + ", commitLogOffset=" + commitLogOffset + ", bodyCRC=" + bodyCRC + ", reconsumeTimes="
-            + reconsumeTimes + ", preparedTransactionOffset=" + preparedTransactionOffset
-            + ", toString()=" + super.toString() + "]";
-    }
 }
