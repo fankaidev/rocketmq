@@ -16,8 +16,10 @@
  */
 package org.apache.rocketmq.common;
 
+import lombok.Data;
 import org.apache.rocketmq.common.constant.PermName;
 
+@Data
 public class TopicConfig {
     private static final String SEPARATOR = " ";
     public static int defaultReadQueueNums = 16;
@@ -78,104 +80,4 @@ public class TopicConfig {
         return false;
     }
 
-    public String getTopicName() {
-        return topicName;
-    }
-
-    public void setTopicName(String topicName) {
-        this.topicName = topicName;
-    }
-
-    public int getReadQueueNums() {
-        return readQueueNums;
-    }
-
-    public void setReadQueueNums(int readQueueNums) {
-        this.readQueueNums = readQueueNums;
-    }
-
-    public int getWriteQueueNums() {
-        return writeQueueNums;
-    }
-
-    public void setWriteQueueNums(int writeQueueNums) {
-        this.writeQueueNums = writeQueueNums;
-    }
-
-    public int getPerm() {
-        return perm;
-    }
-
-    public void setPerm(int perm) {
-        this.perm = perm;
-    }
-
-    public TopicFilterType getTopicFilterType() {
-        return topicFilterType;
-    }
-
-    public void setTopicFilterType(TopicFilterType topicFilterType) {
-        this.topicFilterType = topicFilterType;
-    }
-
-    public int getTopicSysFlag() {
-        return topicSysFlag;
-    }
-
-    public void setTopicSysFlag(int topicSysFlag) {
-        this.topicSysFlag = topicSysFlag;
-    }
-
-    public boolean isOrder() {
-        return order;
-    }
-
-    public void setOrder(boolean isOrder) {
-        this.order = isOrder;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        final TopicConfig that = (TopicConfig) o;
-
-        if (readQueueNums != that.readQueueNums)
-            return false;
-        if (writeQueueNums != that.writeQueueNums)
-            return false;
-        if (perm != that.perm)
-            return false;
-        if (topicSysFlag != that.topicSysFlag)
-            return false;
-        if (order != that.order)
-            return false;
-        if (topicName != null ? !topicName.equals(that.topicName) : that.topicName != null)
-            return false;
-        return topicFilterType == that.topicFilterType;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = topicName != null ? topicName.hashCode() : 0;
-        result = 31 * result + readQueueNums;
-        result = 31 * result + writeQueueNums;
-        result = 31 * result + perm;
-        result = 31 * result + (topicFilterType != null ? topicFilterType.hashCode() : 0);
-        result = 31 * result + topicSysFlag;
-        result = 31 * result + (order ? 1 : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "TopicConfig [topicName=" + topicName + ", readQueueNums=" + readQueueNums
-            + ", writeQueueNums=" + writeQueueNums + ", perm=" + PermName.perm2String(perm)
-            + ", topicFilterType=" + topicFilterType + ", topicSysFlag=" + topicSysFlag + ", order="
-            + order + "]";
-    }
 }

@@ -16,8 +16,11 @@
  */
 package org.apache.rocketmq.store;
 
+import lombok.Data;
+
 import java.util.Map;
 
+@Data
 public class DispatchRequest {
     private final String topic;
     private final int queueId;
@@ -99,75 +102,4 @@ public class DispatchRequest {
         this.propertiesMap = null;
     }
 
-    public String getTopic() {
-        return topic;
-    }
-
-    public int getQueueId() {
-        return queueId;
-    }
-
-    public long getCommitLogOffset() {
-        return commitLogOffset;
-    }
-
-    public int getMsgSize() {
-        return msgSize;
-    }
-
-    public long getStoreTimestamp() {
-        return storeTimestamp;
-    }
-
-    public long getConsumeQueueOffset() {
-        return consumeQueueOffset;
-    }
-
-    public String getKeys() {
-        return keys;
-    }
-
-    public long getTagsCode() {
-        return tagsCode;
-    }
-
-    public int getSysFlag() {
-        return sysFlag;
-    }
-
-    public long getPreparedTransactionOffset() {
-        return preparedTransactionOffset;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getUniqKey() {
-        return uniqKey;
-    }
-
-    public Map<String, String> getPropertiesMap() {
-        return propertiesMap;
-    }
-
-    public byte[] getBitMap() {
-        return bitMap;
-    }
-
-    public void setBitMap(byte[] bitMap) {
-        this.bitMap = bitMap;
-    }
-
-    public void setMsgSize(int msgSize) {
-        this.msgSize = msgSize;
-    }
-
-    public int getBufferSize() {
-        return bufferSize;
-    }
-
-    public void setBufferSize(int bufferSize) {
-        this.bufferSize = bufferSize;
-    }
 }
