@@ -33,6 +33,8 @@ export JAVA="$JAVA_HOME/bin/java"
 export BASE_DIR=$(dirname $0)/..
 export CLASSPATH=.:${BASE_DIR}/conf:${CLASSPATH}
 
+export NAMESRV_ADDR=rocketmq-namesrv:9876
+
 #===========================================================================================
 # JVM Configuration
 #===========================================================================================
