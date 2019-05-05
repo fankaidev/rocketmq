@@ -273,6 +273,7 @@ public class AsyncTraceDispatcher implements TraceDispatcher {
 
             for (TraceTransferBean bean : transBeanList) {
                 // Ensure that the size of the package should not exceed the upper limit.
+                // This premise would still break if single message exceeds limit.
                 int size = bean.getTransData().length();
                 if (buffer.length() + size >= traceProducer.getMaxMessageSize()) {
                     sendTraceDataByMQ(keySet, buffer.toString());
