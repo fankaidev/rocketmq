@@ -17,8 +17,10 @@
 package org.apache.rocketmq.client.producer;
 
 import com.alibaba.fastjson.JSON;
+import lombok.Data;
 import org.apache.rocketmq.common.message.MessageQueue;
 
+@Data
 public class SendResult {
     private SendStatus sendStatus;
     private String msgId;
@@ -61,73 +63,4 @@ public class SendResult {
         return JSON.parseObject(json, SendResult.class);
     }
 
-    public boolean isTraceOn() {
-        return traceOn;
-    }
-
-    public void setTraceOn(final boolean traceOn) {
-        this.traceOn = traceOn;
-    }
-
-    public String getRegionId() {
-        return regionId;
-    }
-
-    public void setRegionId(final String regionId) {
-        this.regionId = regionId;
-    }
-
-    public String getMsgId() {
-        return msgId;
-    }
-
-    public void setMsgId(String msgId) {
-        this.msgId = msgId;
-    }
-
-    public SendStatus getSendStatus() {
-        return sendStatus;
-    }
-
-    public void setSendStatus(SendStatus sendStatus) {
-        this.sendStatus = sendStatus;
-    }
-
-    public MessageQueue getMessageQueue() {
-        return messageQueue;
-    }
-
-    public void setMessageQueue(MessageQueue messageQueue) {
-        this.messageQueue = messageQueue;
-    }
-
-    public long getQueueOffset() {
-        return queueOffset;
-    }
-
-    public void setQueueOffset(long queueOffset) {
-        this.queueOffset = queueOffset;
-    }
-
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    public String getOffsetMsgId() {
-        return offsetMsgId;
-    }
-
-    public void setOffsetMsgId(String offsetMsgId) {
-        this.offsetMsgId = offsetMsgId;
-    }
-
-    @Override
-    public String toString() {
-        return "SendResult [sendStatus=" + sendStatus + ", msgId=" + msgId + ", offsetMsgId=" + offsetMsgId + ", messageQueue=" + messageQueue
-            + ", queueOffset=" + queueOffset + "]";
-    }
 }
