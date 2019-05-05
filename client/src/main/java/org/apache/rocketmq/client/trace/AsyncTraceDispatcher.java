@@ -16,6 +16,8 @@
  */
 package org.apache.rocketmq.client.trace;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.rocketmq.client.common.ThreadLocalIndex;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.impl.consumer.DefaultMQPushConsumerImpl;
@@ -51,6 +53,8 @@ import java.util.HashSet;
 
 import static org.apache.rocketmq.client.trace.TraceConstants.TRACE_INSTANCE_NAME;
 
+@Setter
+@Getter
 public class AsyncTraceDispatcher implements TraceDispatcher {
 
     private final static InternalLogger log = ClientLogger.getLog();
@@ -97,34 +101,6 @@ public class AsyncTraceDispatcher implements TraceDispatcher {
         traceProducer = getAndCreateTraceProducer(rpcHook);
     }
 
-    public String getTraceTopicName() {
-        return traceTopicName;
-    }
-
-    public void setTraceTopicName(String traceTopicName) {
-        this.traceTopicName = traceTopicName;
-    }
-
-    public DefaultMQProducer getTraceProducer() {
-        return traceProducer;
-    }
-
-    public DefaultMQProducerImpl getHostProducer() {
-        return hostProducer;
-    }
-
-    public void setHostProducer(DefaultMQProducerImpl hostProducer) {
-        this.hostProducer = hostProducer;
-    }
-
-    public DefaultMQPushConsumerImpl getHostConsumer() {
-        return hostConsumer;
-    }
-
-    public void setHostConsumer(DefaultMQPushConsumerImpl hostConsumer) {
-        this.hostConsumer = hostConsumer;
-    }
-
     @Override
     public void start(String nameSrvAddr) throws MQClientException {
         if (isStarted.compareAndSet(false, true)) {
@@ -160,6 +136,7 @@ public class AsyncTraceDispatcher implements TraceDispatcher {
         return result;
     }
 
+    //fk: 只是等待
     @Override
     public void flush() throws IOException {
         // The maximum waiting time for refresh,avoid being written all the time, resulting in failure to return.
