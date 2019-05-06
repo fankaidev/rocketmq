@@ -27,6 +27,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.rocketmq.client.QueryResult;
 import org.apache.rocketmq.client.Validators;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -76,6 +79,8 @@ import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 
+@Setter
+@Getter
 public class DefaultMQPushConsumerImpl implements MQConsumerInner {
     /**
      * Delay some time when exception occur
@@ -98,6 +103,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
     private final long consumerStartTimestamp = System.currentTimeMillis();
     private final ArrayList<ConsumeMessageHook> consumeMessageHookList = new ArrayList<ConsumeMessageHook>();
     private final RPCHook rpcHook;
+    @Deprecated
     private volatile ServiceState serviceState = ServiceState.CREATE_JUST;
     private MQClientInstance mQClientFactory;
     private PullAPIWrapper pullAPIWrapper;
@@ -172,10 +178,6 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         return result;
     }
 
-    public DefaultMQPushConsumer getDefaultMQPushConsumer() {
-        return defaultMQPushConsumer;
-    }
-
     public long earliestMsgStoreTime(MessageQueue mq) throws MQClientException {
         return this.mQClientFactory.getMQAdminImpl().earliestMsgStoreTime(mq);
     }
@@ -186,14 +188,6 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
 
     public long minOffset(MessageQueue mq) throws MQClientException {
         return this.mQClientFactory.getMQAdminImpl().minOffset(mq);
-    }
-
-    public OffsetStore getOffsetStore() {
-        return offsetStore;
-    }
-
-    public void setOffsetStore(OffsetStore offsetStore) {
-        this.offsetStore = offsetStore;
     }
 
     public void pullMessage(final PullRequest pullRequest) {
@@ -446,14 +440,6 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
 
     private void executePullRequestLater(final PullRequest pullRequest, final long timeDelay) {
         this.mQClientFactory.getPullMessageService().executePullRequestLater(pullRequest, timeDelay);
-    }
-
-    public boolean isPause() {
-        return pause;
-    }
-
-    public void setPause(boolean pause) {
-        this.pause = pause;
     }
 
     public ConsumerStatsManager getConsumerStatsManager() {
@@ -839,10 +825,6 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         }
     }
 
-    public MessageListener getMessageListenerInner() {
-        return messageListenerInner;
-    }
-
     private void updateTopicSubscribeInfoWhenSubscriptionChanged() {
         Map<String, SubscriptionData> subTable = this.getSubscriptionInner();
         if (subTable != null) {
@@ -926,18 +908,6 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
     public MessageExt viewMessage(String msgId)
         throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
         return this.mQClientFactory.getMQAdminImpl().viewMessage(msgId);
-    }
-
-    public RebalanceImpl getRebalanceImpl() {
-        return rebalanceImpl;
-    }
-
-    public boolean isConsumeOrderly() {
-        return consumeOrderly;
-    }
-
-    public void setConsumeOrderly(boolean consumeOrderly) {
-        this.consumeOrderly = consumeOrderly;
     }
 
     public void resetOffsetByTimeStamp(long timeStamp)
@@ -1071,24 +1041,6 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         return info;
     }
 
-    public MQClientInstance getmQClientFactory() {
-        return mQClientFactory;
-    }
-
-    public void setmQClientFactory(MQClientInstance mQClientFactory) {
-        this.mQClientFactory = mQClientFactory;
-    }
-
-    public ServiceState getServiceState() {
-        return serviceState;
-    }
-
-    //Don't use this deprecated setter, which will be removed soon.
-    @Deprecated
-    public synchronized void setServiceState(ServiceState serviceState) {
-        this.serviceState = serviceState;
-    }
-
     public void adjustThreadPool() {
         long computeAccTotal = this.computeAccumulationTotal();
         long adjustThreadPoolNumsThreshold = this.defaultMQPushConsumer.getAdjustThreadPoolNumsThreshold();
@@ -1131,12 +1083,4 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         return queueTimeSpan;
     }
 
-    public ConsumeMessageService getConsumeMessageService() {
-        return consumeMessageService;
-    }
-
-    public void setConsumeMessageService(ConsumeMessageService consumeMessageService) {
-        this.consumeMessageService = consumeMessageService;
-
-    }
 }

@@ -17,6 +17,15 @@
 package org.apache.rocketmq.broker.client;
 
 import io.netty.channel.Channel;
+import lombok.Data;
+import org.apache.rocketmq.common.constant.LoggerName;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
+import org.apache.rocketmq.common.protocol.heartbeat.ConsumeType;
+import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
+import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
+import org.apache.rocketmq.logging.InternalLogger;
+import org.apache.rocketmq.logging.InternalLoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,14 +33,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.apache.rocketmq.common.constant.LoggerName;
-import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
-import org.apache.rocketmq.logging.InternalLogger;
-import org.apache.rocketmq.logging.InternalLoggerFactory;
-import org.apache.rocketmq.common.protocol.heartbeat.ConsumeType;
-import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
-import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
 
+@Data
 public class ConsumerGroupInfo {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private final String groupName;
@@ -62,14 +65,6 @@ public class ConsumerGroupInfo {
         }
 
         return null;
-    }
-
-    public ConcurrentMap<String, SubscriptionData> getSubscriptionTable() {
-        return subscriptionTable;
-    }
-
-    public ConcurrentMap<Channel, ClientChannelInfo> getChannelInfoTable() {
-        return channelInfoTable;
     }
 
     public List<Channel> getAllChannel() {
@@ -210,39 +205,4 @@ public class ConsumerGroupInfo {
         return this.subscriptionTable.get(topic);
     }
 
-    public ConsumeType getConsumeType() {
-        return consumeType;
-    }
-
-    public void setConsumeType(ConsumeType consumeType) {
-        this.consumeType = consumeType;
-    }
-
-    public MessageModel getMessageModel() {
-        return messageModel;
-    }
-
-    public void setMessageModel(MessageModel messageModel) {
-        this.messageModel = messageModel;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public long getLastUpdateTimestamp() {
-        return lastUpdateTimestamp;
-    }
-
-    public void setLastUpdateTimestamp(long lastUpdateTimestamp) {
-        this.lastUpdateTimestamp = lastUpdateTimestamp;
-    }
-
-    public ConsumeFromWhere getConsumeFromWhere() {
-        return consumeFromWhere;
-    }
-
-    public void setConsumeFromWhere(ConsumeFromWhere consumeFromWhere) {
-        this.consumeFromWhere = consumeFromWhere;
-    }
 }
