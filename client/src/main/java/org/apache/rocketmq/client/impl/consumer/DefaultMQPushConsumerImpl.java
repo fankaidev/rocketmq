@@ -115,6 +115,10 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
     private long queueFlowControlTimes = 0;
     private long queueMaxSpanFlowControlTimes = 0;
 
+    public MQClientInstance getmQClientFactory() {
+        return mQClientFactory;
+    }
+
     public DefaultMQPushConsumerImpl(DefaultMQPushConsumer defaultMQPushConsumer, RPCHook rpcHook) {
         this.defaultMQPushConsumer = defaultMQPushConsumer;
         this.rpcHook = rpcHook;

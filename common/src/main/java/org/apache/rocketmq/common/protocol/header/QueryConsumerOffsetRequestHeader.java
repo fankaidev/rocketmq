@@ -20,10 +20,12 @@
  */
 package org.apache.rocketmq.common.protocol.header;
 
+import lombok.Data;
 import org.apache.rocketmq.remoting.CommandCustomHeader;
 import org.apache.rocketmq.remoting.annotation.CFNotNull;
 import org.apache.rocketmq.remoting.exception.RemotingCommandException;
 
+@Data
 public class QueryConsumerOffsetRequestHeader implements CommandCustomHeader {
     @CFNotNull
     private String consumerGroup;
@@ -36,27 +38,4 @@ public class QueryConsumerOffsetRequestHeader implements CommandCustomHeader {
     public void checkFields() throws RemotingCommandException {
     }
 
-    public String getConsumerGroup() {
-        return consumerGroup;
-    }
-
-    public void setConsumerGroup(String consumerGroup) {
-        this.consumerGroup = consumerGroup;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    public Integer getQueueId() {
-        return queueId;
-    }
-
-    public void setQueueId(Integer queueId) {
-        this.queueId = queueId;
-    }
 }
