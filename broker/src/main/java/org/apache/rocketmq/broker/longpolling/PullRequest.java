@@ -17,10 +17,12 @@
 package org.apache.rocketmq.broker.longpolling;
 
 import io.netty.channel.Channel;
+import lombok.Data;
 import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.apache.rocketmq.store.MessageFilter;
 
+@Data
 public class PullRequest {
     private final RemotingCommand requestCommand;
     private final Channel clientChannel;
@@ -42,31 +44,4 @@ public class PullRequest {
         this.messageFilter = messageFilter;
     }
 
-    public RemotingCommand getRequestCommand() {
-        return requestCommand;
-    }
-
-    public Channel getClientChannel() {
-        return clientChannel;
-    }
-
-    public long getTimeoutMillis() {
-        return timeoutMillis;
-    }
-
-    public long getSuspendTimestamp() {
-        return suspendTimestamp;
-    }
-
-    public long getPullFromThisOffset() {
-        return pullFromThisOffset;
-    }
-
-    public SubscriptionData getSubscriptionData() {
-        return subscriptionData;
-    }
-
-    public MessageFilter getMessageFilter() {
-        return messageFilter;
-    }
 }

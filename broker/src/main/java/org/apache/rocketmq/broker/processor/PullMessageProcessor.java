@@ -236,6 +236,27 @@ public class PullMessageProcessor implements NettyRequestProcessor {
         final GetMessageResult getMessageResult =
             this.brokerController.getMessageStore().getMessage(requestHeader.getConsumerGroup(), requestHeader.getTopic(),
                 requestHeader.getQueueId(), requestHeader.getQueueOffset(), requestHeader.getMaxMsgNums(), messageFilter);
+        response = handleResult(channel, request, brokerAllowSuspend, response,
+                responseHeader, requestHeader, subscriptionGroupConfig, hasSuspendFlag,
+                suspendTimeoutMillisLong, subscriptionData, messageFilter, getMessageResult);
+
+        boolean storeOffsetEnable = brokerAllowSuspend;
+        storeOffsetEnable = storeOffsetEnable && hasCommitOffsetFlag;
+        storeOffsetEnable = storeOffsetEnable
+            && this.brokerController.getMessageStoreConfig().getBrokerRole() != BrokerRole.SLAVE;
+        if (storeOffsetEnable) {
+            this.brokerController.getConsumerOffsetManager().commitOffset(RemotingHelper.parseChannelRemoteAddr(channel),
+                requestHeader.getConsumerGroup(), requestHeader.getTopic(), requestHeader.getQueueId(), requestHeader.getCommitOffset());
+        }
+        return response;
+    }
+
+    private RemotingCommand handleResult(Channel channel, RemotingCommand request,
+            boolean brokerAllowSuspend, RemotingCommand response,
+            PullMessageResponseHeader responseHeader, PullMessageRequestHeader requestHeader,
+            SubscriptionGroupConfig subscriptionGroupConfig, boolean hasSuspendFlag,
+            long suspendTimeoutMillisLong, SubscriptionData subscriptionData,
+            MessageFilter messageFilter, GetMessageResult getMessageResult) {
         if (getMessageResult != null) {
             response.setRemark(getMessageResult.getStatus().name());
             responseHeader.setNextBeginOffset(getMessageResult.getNextBeginOffset());
@@ -456,15 +477,6 @@ public class PullMessageProcessor implements NettyRequestProcessor {
         } else {
             response.setCode(ResponseCode.SYSTEM_ERROR);
             response.setRemark("store getMessage return null");
-        }
-
-        boolean storeOffsetEnable = brokerAllowSuspend;
-        storeOffsetEnable = storeOffsetEnable && hasCommitOffsetFlag;
-        storeOffsetEnable = storeOffsetEnable
-            && this.brokerController.getMessageStoreConfig().getBrokerRole() != BrokerRole.SLAVE;
-        if (storeOffsetEnable) {
-            this.brokerController.getConsumerOffsetManager().commitOffset(RemotingHelper.parseChannelRemoteAddr(channel),
-                requestHeader.getConsumerGroup(), requestHeader.getTopic(), requestHeader.getQueueId(), requestHeader.getCommitOffset());
         }
         return response;
     }
