@@ -16,6 +16,15 @@
  */
 package org.apache.rocketmq.client.impl.consumer;
 
+import lombok.Data;
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.log.ClientLogger;
+import org.apache.rocketmq.common.message.MessageAccessor;
+import org.apache.rocketmq.common.message.MessageConst;
+import org.apache.rocketmq.common.message.MessageExt;
+import org.apache.rocketmq.common.protocol.body.ProcessQueueInfo;
+import org.apache.rocketmq.logging.InternalLogger;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,17 +35,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.log.ClientLogger;
-import org.apache.rocketmq.logging.InternalLogger;
-import org.apache.rocketmq.common.message.MessageAccessor;
-import org.apache.rocketmq.common.message.MessageConst;
-import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.common.protocol.body.ProcessQueueInfo;
 
 /**
  * Queue consumption snapshot
  */
+@Data
 public class ProcessQueue {
     public final static long REBALANCE_LOCK_MAX_LIVE_TIME =
         Long.parseLong(System.getProperty("rocketmq.client.rebalance.lockMaxLiveTime", "30000"));
@@ -214,34 +217,6 @@ public class ProcessQueue {
         return result;
     }
 
-    public TreeMap<Long, MessageExt> getMsgTreeMap() {
-        return msgTreeMap;
-    }
-
-    public AtomicLong getMsgCount() {
-        return msgCount;
-    }
-
-    public AtomicLong getMsgSize() {
-        return msgSize;
-    }
-
-    public boolean isDropped() {
-        return dropped;
-    }
-
-    public void setDropped(boolean dropped) {
-        this.dropped = dropped;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
-    }
-
     public void rollback() {
         try {
             this.lockTreeMap.writeLock().lockInterruptibly();
@@ -358,38 +333,6 @@ public class ProcessQueue {
         }
     }
 
-    public long getLastLockTimestamp() {
-        return lastLockTimestamp;
-    }
-
-    public void setLastLockTimestamp(long lastLockTimestamp) {
-        this.lastLockTimestamp = lastLockTimestamp;
-    }
-
-    public Lock getLockConsume() {
-        return lockConsume;
-    }
-
-    public long getLastPullTimestamp() {
-        return lastPullTimestamp;
-    }
-
-    public void setLastPullTimestamp(long lastPullTimestamp) {
-        this.lastPullTimestamp = lastPullTimestamp;
-    }
-
-    public long getMsgAccCnt() {
-        return msgAccCnt;
-    }
-
-    public void setMsgAccCnt(long msgAccCnt) {
-        this.msgAccCnt = msgAccCnt;
-    }
-
-    public long getTryUnlockTimes() {
-        return this.tryUnlockTimes.get();
-    }
-
     public void incTryUnlockTimes() {
         this.tryUnlockTimes.incrementAndGet();
     }
@@ -424,11 +367,4 @@ public class ProcessQueue {
         }
     }
 
-    public long getLastConsumeTimestamp() {
-        return lastConsumeTimestamp;
-    }
-
-    public void setLastConsumeTimestamp(long lastConsumeTimestamp) {
-        this.lastConsumeTimestamp = lastConsumeTimestamp;
-    }
 }
