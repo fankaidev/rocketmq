@@ -16,9 +16,11 @@
  */
 package org.apache.rocketmq.store;
 
+import lombok.Data;
 import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.message.MessageExt;
 
+@Data
 public class MessageExtBrokerInner extends MessageExt {
     private static final long serialVersionUID = 7256001576878700634L;
     private String propertiesString;
@@ -34,19 +36,4 @@ public class MessageExtBrokerInner extends MessageExt {
         return tagsString2tagsCode(null, tags);
     }
 
-    public String getPropertiesString() {
-        return propertiesString;
-    }
-
-    public void setPropertiesString(String propertiesString) {
-        this.propertiesString = propertiesString;
-    }
-
-    public long getTagsCode() {
-        return tagsCode;
-    }
-
-    public void setTagsCode(long tagsCode) {
-        this.tagsCode = tagsCode;
-    }
 }

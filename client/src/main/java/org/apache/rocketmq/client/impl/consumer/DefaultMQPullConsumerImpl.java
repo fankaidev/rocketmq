@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.rocketmq.client.QueryResult;
 import org.apache.rocketmq.client.Validators;
 import org.apache.rocketmq.client.consumer.DefaultMQPullConsumer;
@@ -65,6 +68,8 @@ import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 
+@Setter
+@Getter
 public class DefaultMQPullConsumerImpl implements MQConsumerInner {
     private final InternalLogger log = ClientLogger.getLog();
     private final DefaultMQPullConsumer defaultMQPullConsumer;
@@ -72,6 +77,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
     private final RPCHook rpcHook;
     private final ArrayList<ConsumeMessageHook> consumeMessageHookList = new ArrayList<ConsumeMessageHook>();
     private final ArrayList<FilterMessageHook> filterMessageHookList = new ArrayList<FilterMessageHook>();
+    @Deprecated
     private volatile ServiceState serviceState = ServiceState.CREATE_JUST;
     private MQClientInstance mQClientFactory;
     private PullAPIWrapper pullAPIWrapper;
@@ -494,10 +500,6 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         return this.pullSyncImpl(mq, subscriptionData, offset, maxNums, true, this.getDefaultMQPullConsumer().getConsumerPullTimeoutMillis());
     }
 
-    public DefaultMQPullConsumer getDefaultMQPullConsumer() {
-        return defaultMQPullConsumer;
-    }
-
     public void pullBlockIfNotFound(MessageQueue mq, String subExpression, long offset, int maxNums,
         PullCallback pullCallback)
         throws MQClientException, RemotingException, InterruptedException {
@@ -726,37 +728,4 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         log.info("register FilterMessageHook Hook, {}", hook.hookName());
     }
 
-    public OffsetStore getOffsetStore() {
-        return offsetStore;
-    }
-
-    public void setOffsetStore(OffsetStore offsetStore) {
-        this.offsetStore = offsetStore;
-    }
-
-    public PullAPIWrapper getPullAPIWrapper() {
-        return pullAPIWrapper;
-    }
-
-    public void setPullAPIWrapper(PullAPIWrapper pullAPIWrapper) {
-        this.pullAPIWrapper = pullAPIWrapper;
-    }
-
-    public ServiceState getServiceState() {
-        return serviceState;
-    }
-
-    //Don't use this deprecated setter, which will be removed soon.
-    @Deprecated
-    public void setServiceState(ServiceState serviceState) {
-        this.serviceState = serviceState;
-    }
-
-    public long getConsumerStartTimestamp() {
-        return consumerStartTimestamp;
-    }
-
-    public RebalanceImpl getRebalanceImpl() {
-        return rebalanceImpl;
-    }
 }
