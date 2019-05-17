@@ -17,13 +17,12 @@
 package org.apache.rocketmq.store;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.rocketmq.common.ServiceThread;
+
 import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.logging.InternalLogger;
@@ -50,7 +49,7 @@ public class CommitLog {
     protected final static int BLANK_MAGIC_CODE = -875286124;
     protected final MappedFileQueue mappedFileQueue;
     protected final DefaultMessageStore defaultMessageStore;
-    private final FlushCommitLogService flushCommitLogService;
+    final FlushCommitLogService flushCommitLogService;
 
     //If TransientStorePool enabled, we must flush message to FileChannel at fixed periods
     private final FlushCommitLogService commitLogService;
@@ -69,12 +68,12 @@ public class CommitLog {
         this.defaultMessageStore = defaultMessageStore;
 
         if (FlushDiskType.SYNC_FLUSH == defaultMessageStore.getMessageStoreConfig().getFlushDiskType()) {
-            this.flushCommitLogService = new GroupCommitService();
+            this.flushCommitLogService = new GroupCommitService(this);
         } else {
-            this.flushCommitLogService = new FlushRealTimeService();
+            this.flushCommitLogService = new FlushRealTimeService(this);
         }
 
-        this.commitLogService = new CommitRealTimeService();
+        this.commitLogService = new CommitRealTimeService(this);
 
         this.appendMessageCallback = new DefaultAppendMessageCallback(defaultMessageStore.getMessageStoreConfig().getMaxMessageSize());
         batchEncoderThreadLocal = new ThreadLocal<MessageExtBatchEncoder>() {
@@ -900,144 +899,6 @@ public class CommitLog {
         return diff;
     }
 
-    abstract class FlushCommitLogService extends ServiceThread {
-        protected static final int RETRY_TIMES_OVER = 10;
-    }
-
-    class CommitRealTimeService extends FlushCommitLogService {
-
-        private long lastCommitTimestamp = 0;
-
-        @Override
-        public String getServiceName() {
-            return CommitRealTimeService.class.getSimpleName();
-        }
-
-        @Override
-        public void run() {
-            CommitLog.log.info(this.getServiceName() + " service started");
-            while (!this.isStopped()) {
-                int interval = CommitLog.this.defaultMessageStore.getMessageStoreConfig().getCommitIntervalCommitLog();
-
-                int commitDataLeastPages = CommitLog.this.defaultMessageStore.getMessageStoreConfig().getCommitCommitLogLeastPages();
-
-                int commitDataThoroughInterval =
-                    CommitLog.this.defaultMessageStore.getMessageStoreConfig().getCommitCommitLogThoroughInterval();
-
-                long begin = System.currentTimeMillis();
-                if (begin >= (this.lastCommitTimestamp + commitDataThoroughInterval)) {
-                    this.lastCommitTimestamp = begin;
-                    commitDataLeastPages = 0;
-                }
-
-                try {
-                    boolean result = CommitLog.this.mappedFileQueue.commit(commitDataLeastPages);
-                    long end = System.currentTimeMillis();
-                    if (!result) {
-                        this.lastCommitTimestamp = end; // result = false means some data committed.
-                        //now wake up flush thread.
-                        flushCommitLogService.wakeup();
-                    }
-
-                    if (end - begin > 500) {
-                        log.info("Commit data to file costs {} ms", end - begin);
-                    }
-                    this.waitForRunning(interval);
-                } catch (Throwable e) {
-                    CommitLog.log.error(this.getServiceName() + " service has exception. ", e);
-                }
-            }
-
-            boolean result = false;
-            for (int i = 0; i < RETRY_TIMES_OVER && !result; i++) {
-                result = CommitLog.this.mappedFileQueue.commit(0);
-                CommitLog.log.info(this.getServiceName() + " service shutdown, retry " + (i + 1) + " times " + (result ? "OK" : "Not OK"));
-            }
-            CommitLog.log.info(this.getServiceName() + " service end");
-        }
-    }
-
-    class FlushRealTimeService extends FlushCommitLogService {
-        private long lastFlushTimestamp = 0;
-        private long printTimes = 0;
-
-        public void run() {
-            CommitLog.log.info(this.getServiceName() + " service started");
-
-            while (!this.isStopped()) {
-                boolean flushCommitLogTimed = CommitLog.this.defaultMessageStore.getMessageStoreConfig().isFlushCommitLogTimed();
-
-                int interval = CommitLog.this.defaultMessageStore.getMessageStoreConfig().getFlushIntervalCommitLog();
-                int flushPhysicQueueLeastPages = CommitLog.this.defaultMessageStore.getMessageStoreConfig().getFlushCommitLogLeastPages();
-
-                int flushPhysicQueueThoroughInterval =
-                    CommitLog.this.defaultMessageStore.getMessageStoreConfig().getFlushCommitLogThoroughInterval();
-
-                boolean printFlushProgress = false;
-
-                // Print flush progress
-                long currentTimeMillis = System.currentTimeMillis();
-                if (currentTimeMillis >= (this.lastFlushTimestamp + flushPhysicQueueThoroughInterval)) {
-                    this.lastFlushTimestamp = currentTimeMillis;
-                    flushPhysicQueueLeastPages = 0;
-                    printFlushProgress = (printTimes++ % 10) == 0;
-                }
-
-                try {
-                    if (flushCommitLogTimed) {
-                        Thread.sleep(interval);
-                    } else {
-                        this.waitForRunning(interval);
-                    }
-
-                    if (printFlushProgress) {
-                        this.printFlushProgress();
-                    }
-
-                    long begin = System.currentTimeMillis();
-                    CommitLog.this.mappedFileQueue.flush(flushPhysicQueueLeastPages);
-                    long storeTimestamp = CommitLog.this.mappedFileQueue.getStoreTimestamp();
-                    if (storeTimestamp > 0) {
-                        CommitLog.this.defaultMessageStore.getStoreCheckpoint().setPhysicMsgTimestamp(storeTimestamp);
-                    }
-                    long past = System.currentTimeMillis() - begin;
-                    if (past > 500) {
-                        log.info("Flush data to disk costs {} ms", past);
-                    }
-                } catch (Throwable e) {
-                    CommitLog.log.warn(this.getServiceName() + " service has exception. ", e);
-                    this.printFlushProgress();
-                }
-            }
-
-            // Normal shutdown, to ensure that all the flush before exit
-            boolean result = false;
-            for (int i = 0; i < RETRY_TIMES_OVER && !result; i++) {
-                result = CommitLog.this.mappedFileQueue.flush(0);
-                CommitLog.log.info(this.getServiceName() + " service shutdown, retry " + (i + 1) + " times " + (result ? "OK" : "Not OK"));
-            }
-
-            this.printFlushProgress();
-
-            CommitLog.log.info(this.getServiceName() + " service end");
-        }
-
-        @Override
-        public String getServiceName() {
-            return FlushRealTimeService.class.getSimpleName();
-        }
-
-        private void printFlushProgress() {
-            // CommitLog.log.info("how much disk fall behind memory, "
-            // + CommitLog.this.mappedFileQueue.howMuchFallBehind());
-        }
-
-        @Override
-        public long getJointime() {
-            return 1000 * 60 * 5;
-        }
-    }
-
     public static class GroupCommitRequest {
         private final long nextOffset;
         private final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -1064,105 +925,6 @@ public class CommitLog {
                 log.error("Interrupted", e);
                 return false;
             }
-        }
-    }
-
-    /**
-     * GroupCommit Service
-     */
-    class GroupCommitService extends FlushCommitLogService {
-        private volatile List<GroupCommitRequest> requestsWrite = new ArrayList<GroupCommitRequest>();
-        private volatile List<GroupCommitRequest> requestsRead = new ArrayList<GroupCommitRequest>();
-
-        public synchronized void putRequest(final GroupCommitRequest request) {
-            synchronized (this.requestsWrite) {
-                this.requestsWrite.add(request);
-            }
-            if (hasNotified.compareAndSet(false, true)) {
-                waitPoint.countDown(); // notify
-            }
-        }
-
-        private void swapRequests() {
-            List<GroupCommitRequest> tmp = this.requestsWrite;
-            this.requestsWrite = this.requestsRead;
-            this.requestsRead = tmp;
-        }
-
-        private void doCommit() {
-            synchronized (this.requestsRead) {
-                if (!this.requestsRead.isEmpty()) {
-                    for (GroupCommitRequest req : this.requestsRead) {
-                        // There may be a message in the next file, so a maximum of
-                        // two times the flush
-                        boolean flushOK = false;
-                        for (int i = 0; i < 2 && !flushOK; i++) {
-                            flushOK = CommitLog.this.mappedFileQueue.getFlushedWhere() >= req.getNextOffset();
-
-                            if (!flushOK) {
-                                CommitLog.this.mappedFileQueue.flush(0);
-                            }
-                        }
-
-                        req.wakeupCustomer(flushOK);
-                    }
-
-                    long storeTimestamp = CommitLog.this.mappedFileQueue.getStoreTimestamp();
-                    if (storeTimestamp > 0) {
-                        CommitLog.this.defaultMessageStore.getStoreCheckpoint().setPhysicMsgTimestamp(storeTimestamp);
-                    }
-
-                    this.requestsRead.clear();
-                } else {
-                    // Because of individual messages is set to not sync flush, it
-                    // will come to this process
-                    CommitLog.this.mappedFileQueue.flush(0);
-                }
-            }
-        }
-
-        public void run() {
-            CommitLog.log.info(this.getServiceName() + " service started");
-
-            while (!this.isStopped()) {
-                try {
-                    this.waitForRunning(10);
-                    this.doCommit();
-                } catch (Exception e) {
-                    CommitLog.log.warn(this.getServiceName() + " service has exception. ", e);
-                }
-            }
-
-            // Under normal circumstances shutdown, wait for the arrival of the
-            // request, and then flush
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                CommitLog.log.warn("GroupCommitService Exception, ", e);
-            }
-
-            synchronized (this) {
-                this.swapRequests();
-            }
-
-            this.doCommit();
-
-            CommitLog.log.info(this.getServiceName() + " service end");
-        }
-
-        @Override
-        protected void onWaitEnd() {
-            this.swapRequests();
-        }
-
-        @Override
-        public String getServiceName() {
-            return GroupCommitService.class.getSimpleName();
-        }
-
-        @Override
-        public long getJointime() {
-            return 1000 * 60 * 5;
         }
     }
 

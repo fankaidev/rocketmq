@@ -16,8 +16,11 @@
  */
 package org.apache.rocketmq.store.index;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class QueryOffsetResult {
     private final List<Long> phyOffsets;
     private final long indexLastUpdateTimestamp;
@@ -30,15 +33,4 @@ public class QueryOffsetResult {
         this.indexLastUpdatePhyoffset = indexLastUpdatePhyoffset;
     }
 
-    public List<Long> getPhyOffsets() {
-        return phyOffsets;
-    }
-
-    public long getIndexLastUpdateTimestamp() {
-        return indexLastUpdateTimestamp;
-    }
-
-    public long getIndexLastUpdatePhyoffset() {
-        return indexLastUpdatePhyoffset;
-    }
 }
