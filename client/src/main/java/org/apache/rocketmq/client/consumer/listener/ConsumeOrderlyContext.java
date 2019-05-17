@@ -16,11 +16,13 @@
  */
 package org.apache.rocketmq.client.consumer.listener;
 
+import lombok.Data;
 import org.apache.rocketmq.common.message.MessageQueue;
 
 /**
  * Consumer Orderly consumption context
  */
+@Data
 public class ConsumeOrderlyContext {
     private final MessageQueue messageQueue;
     private boolean autoCommit = true;
@@ -30,23 +32,4 @@ public class ConsumeOrderlyContext {
         this.messageQueue = messageQueue;
     }
 
-    public boolean isAutoCommit() {
-        return autoCommit;
-    }
-
-    public void setAutoCommit(boolean autoCommit) {
-        this.autoCommit = autoCommit;
-    }
-
-    public MessageQueue getMessageQueue() {
-        return messageQueue;
-    }
-
-    public long getSuspendCurrentQueueTimeMillis() {
-        return suspendCurrentQueueTimeMillis;
-    }
-
-    public void setSuspendCurrentQueueTimeMillis(long suspendCurrentQueueTimeMillis) {
-        this.suspendCurrentQueueTimeMillis = suspendCurrentQueueTimeMillis;
-    }
 }
